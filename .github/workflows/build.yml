@@ -4,43 +4,47 @@ on:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:  # 手动触发支持
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-macos:
     runs-on: macos-latest
-
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.11'
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
 
-    - name: Install dependencies
-      run: |
-        python -m venv venv
-        source venv/bin/activate
-        pip install --upgrade pip
-        pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
 
-    - name: Build with PyInstaller
-      run: |
-        source venv/bin/activate
-        pyinstaller --noconfirm --windowed --clean --name easy-see main.py
+      - name: Build .app with PyInstaller
+        run: |
+          source venv/bin/activate
+          pyinstaller --noconfirm --windowed --name easy-see main.py
 
-    - name: Create DMG
-      run: |
-        mkdir -p dmg
-        cp -R dist/easy-see.app dmg/
-        hdiutil create easy-see.dmg -volname "EasySee" -srcfolder dmg -ov -format UDZO
+      - name: Compress .app
+        run: |
+          cd dist
+          zip -r easy-see.app.zip easy-see.app
 
-    - name: Upload Artifacts
-      uses: actions/upload-artifact@v4
-      with:
-        name: easy-see-mac
-        path: |
-          dist/easy-see.app
-          easy-see.dmg
+      - name: Create .dmg
+        run: |
+          cd dist
+          hdiutil create -volname EasySee -srcfolder easy-see.app -ov -format UDZO easy-see.dmg
+
+      - name: Upload .app.zip and .dmg
+        uses: actions/upload-artifact@v4
+        with:
+          name: easy-see-mac
+          path: |
+            dist/easy-see.app.zip
+            dist/easy-see.dmg
