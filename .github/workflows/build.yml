@@ -29,20 +29,24 @@ jobs:
         source venv/bin/activate
         python setup.py py2app
 
-    - name: Build .dmg
+    - name: Zip the .app bundle
       run: |
-        hdiutil create -volname EasySee -srcfolder dist/main.app -ov -format UDZO EasySee.dmg
+        cd dist
+        zip -r main.app.zip main.app
 
-    - name: Upload .app and .dmg to release
+    - name: Build .dmg installer
+      run: |
+        hdiutil create -volname EasySee \
+          -srcfolder dist/main.app \
+          -ov -format UDZO EasySee.dmg
+
+    - name: Create GitHub Release and Upload Artifacts
       uses: softprops/action-gh-release@v1
       with:
+        name: "EasySee for macOS"
+        tag_name: "v1.0"
         files: |
           dist/main.app.zip
           EasySee.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-    - name: Zip the .app for uploading
-      run: |
-        cd dist
-        zip -r main.app.zip main.app
