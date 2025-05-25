@@ -22,7 +22,7 @@ jobs:
       run: |
         python3 -m venv venv
         source venv/bin/activate
-        pip install --upgrade pip setuptools==65.5.0 wheel py2app==0.28
+        pip install --upgrade pip setuptools==65.5.0 wheel py2app==0.27.1
         pip install importlib_metadata==6.7.0
         pip install -r requirements.txt
 
