@@ -6,7 +6,6 @@ OPTIONS = {
     'argv_emulation': True,
     'includes': ['streamlit', 'pandas', 'chardet'],
     'packages': ['streamlit', 'pandas', 'chardet'],
-    'resources': ['resources']  # 显式打包资源
 }
 
 setup(
