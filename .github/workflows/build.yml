@@ -1,9 +1,9 @@
-name: Build Mac App
+name: Build macOS App
 
 on:
   push:
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
@@ -12,34 +12,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
+          python3 -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install py2app
 
-      - name: Build .app with py2app
+      - name: Build with py2app
         run: |
-          python setup.py py2app
+          python3 setup.py py2app
 
-      - name: Zip the .app
+      - name: List build output
         run: |
-          cd dist
-          zip -r main.app.zip main.app
+          ls -al dist/
 
-      - name: Create .dmg
+      - name: Create DMG
         run: |
           hdiutil create -volname easy-see -srcfolder dist/main.app -ov -format UDZO dist/easy-see.dmg
 
-      - name: Upload Artifacts
+      - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           name: easy-see-mac
           path: |
-            dist/main.app.zip
             dist/easy-see.dmg
+            dist/main.app
