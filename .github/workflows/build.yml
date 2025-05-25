@@ -3,49 +3,40 @@ name: Build macOS App
 on:
   push:
     tags:
-      - "v*"
-  workflow_dispatch: {}  # <-- 添加这一行，允许从 GitHub 界面手动触发构建
+      - 'v*'  # 推送 tag 时触发
 
 jobs:
-  build:
+  build-macos:
     runs-on: macos-latest
-
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python3 -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install py2app
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip wheel setuptools py2app
+        pip install -r requirements.txt
 
-      - name: Build .app with py2app
-        run: |
-          source venv/bin/activate
-          python3 setup.py py2app
+    - name: Build .app
+      run: |
+        source venv/bin/activate
+        python setup.py py2app
 
-      - name: Zip the .app bundle
-        run: |
-          cd dist
-          # 使用 ditto 压缩 .app 更适合 mac 应用包
-          ditto -c -k --sequesterRsrc --keepParent main.app ../main.app.zip
+    - name: Compress app and dmg
+      run: |
+        cd dist
+        zip -r easy-see.app.zip main.app
+        hdiutil create -volname EasySee -srcfolder main.app -ov -format UDZO easy-see.dmg
 
-      - name: Create .dmg installer
-        run: |
-          hdiutil create -volname easy-see -srcfolder dist/main.app -ov -format UDZO dist/easy-see.dmg
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: easy-see-macos
-          path: |
-            dist/main.app.zip
-            dist/easy-see.dmg
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: easy-see-mac
+        path: dist/*
