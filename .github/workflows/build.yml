@@ -1,45 +1,48 @@
 name: Build macOS App
 
 on:
-  workflow_dispatch:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
 
 jobs:
   build-macos:
     runs-on: macos-latest
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
 
-      - name: Build .app
-        run: |
-          source venv/bin/activate
-          export PYTHONPATH=$PWD
-          python setup.py py2app --no-strip
+    - name: Build .app using PyInstaller
+      run: |
+        source venv/bin/activate
+        pyinstaller app.py --name easy-see --windowed --noconfirm
 
+    - name: Create DMG installer
+      run: |
+        hdiutil create -volname EasySee \
+                       -srcfolder dist/easy-see.app \
+                       -ov -format UDZO \
+                       dist/easy-see.dmg
 
-      - name: Compress app and dmg
-        run: |
-          cd dist
-          zip -r easy-see.app.zip main.app
-          hdiutil create -volname EasySee -srcfolder main.app -ov -format UDZO easy-see.dmg
-
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: easy-see-mac
-          path: dist/*
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: easy-see-mac
+        path: |
+          dist/easy-see.dmg
+          dist/easy-see.app
