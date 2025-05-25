@@ -1,10 +1,10 @@
-name: Build macOS App
+name: Build macOS App with PyInstaller
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
-  workflow_dispatch:
 
 jobs:
   build-macos:
@@ -12,7 +12,7 @@ jobs:
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
       uses: actions/setup-python@v4
@@ -23,26 +23,24 @@ jobs:
       run: |
         python -m venv venv
         source venv/bin/activate
-        pip install --upgrade pip
         pip install -r requirements.txt
         pip install pyinstaller
 
-    - name: Build .app using PyInstaller
+    - name: Build .app with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller app.py --name easy-see --windowed --noconfirm
+        pyinstaller main.py --noconfirm --windowed --onefile --name easy-see
 
-    - name: Create DMG installer
+    - name: Create .dmg installer
       run: |
-        hdiutil create -volname EasySee \
-                       -srcfolder dist/easy-see.app \
-                       -ov -format UDZO \
-                       dist/easy-see.dmg
+        mkdir -p dmg-staging
+        cp dist/easy-see dmg-staging/
+        hdiutil create easy-see.dmg -volname "EasySee" -srcfolder dmg-staging -ov -format UDZO
 
-    - name: Upload Artifacts
+    - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
-        name: easy-see-mac
+        name: easy-see-macos
         path: |
-          dist/easy-see.dmg
-          dist/easy-see.app
+          dist/easy-see
+          easy-see.dmg
