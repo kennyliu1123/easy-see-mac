@@ -1,14 +1,17 @@
 import os
 import sys
-import subprocess
+import streamlit.web.bootstrap
 
-def resource_path(relative_path):
-    """正确获取打包后资源路径（支持 .app 包）"""
-    if hasattr(sys, '_MEIPASS'):
-        return os.path.join(sys._MEIPASS, relative_path)
-    return os.path.join(os.path.abspath("."), relative_path)
+def resource_path(filename):
+    # 如果使用 PyInstaller 打包，_MEIPASS 是临时目录
+    base = getattr(sys, '_MEIPASS', os.path.dirname(os.path.abspath(__file__)))
+    return os.path.join(base, filename)
 
-if __name__ == '__main__':
-    app_path = resource_path("app.py")
-    # 使用完整路径运行 streamlit
-    subprocess.run(["streamlit", "run", app_path])
+if __name__ == "__main__":
+    app_file = resource_path("app.py")
+    streamlit.web.bootstrap.run(
+        app_file,
+        f"run.py {app_file}",
+        [],
+        flag_options={}
+    )
