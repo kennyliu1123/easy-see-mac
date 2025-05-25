@@ -29,7 +29,13 @@ jobs:
     - name: Build .app with PyInstaller
       run: |
         source venv/bin/activate
-        pyinstaller --windowed --name easy-see main.py
+        pyinstaller main.py \
+           --name easy-see \
+           --windowed \
+           --noconfirm \
+           --copy-metadata streamlit \
+           --hidden-import streamlit
+
 
     - name: Compress .app and create .dmg
       run: |
