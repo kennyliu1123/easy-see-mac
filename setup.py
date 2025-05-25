@@ -5,11 +5,11 @@ DATA_FILES = ['app.py', 'state_init.py']
 OPTIONS = {
     'argv_emulation': True,
     'includes': ['streamlit'],
-    'excludes': ['tkinter', 'email', 'unittest', 'pydevd'],
     'packages': ['pandas', 'chardet'],
-    'resources': ['app.py', 'state_init.py']
+    'excludes': ['tkinter', 'unittest', 'email', 'html'],
+    'resources': DATA_FILES,
+    'optimize': 1
 }
-
 
 setup(
     app=APP,
