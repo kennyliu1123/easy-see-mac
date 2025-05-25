@@ -10,41 +10,38 @@ jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install pyinstaller
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip
+        pip install -r requirements.txt
+        pip install pyinstaller
 
-      - name: Build .app with PyInstaller
-        run: |
-          source venv/bin/activate
-          pyinstaller --noconfirm --windowed --name easy-see main.py
+    - name: Build .app with PyInstaller
+      run: |
+        source venv/bin/activate
+        pyinstaller --windowed --name easy-see main.py
 
-      - name: Compress .app
-        run: |
-          cd dist
-          zip -r easy-see.app.zip easy-see.app
+    - name: Compress .app and create .dmg
+      run: |
+        mkdir dist/final
+        cp -R dist/easy-see.app dist/final/
+        hdiutil create -volname EasySee -srcfolder dist/final -ov -format UDZO dist/easy-see.dmg
+        zip -r dist/easy-see.app.zip dist/easy-see.app
 
-      - name: Create .dmg
-        run: |
-          cd dist
-          hdiutil create -volname EasySee -srcfolder easy-see.app -ov -format UDZO easy-see.dmg
-
-      - name: Upload .app.zip and .dmg
-        uses: actions/upload-artifact@v4
-        with:
-          name: easy-see-mac
-          path: |
-            dist/easy-see.app.zip
-            dist/easy-see.dmg
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: easy-see-mac
+        path: |
+          dist/easy-see.dmg
+          dist/easy-see.app.zip
