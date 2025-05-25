@@ -38,7 +38,7 @@ jobs:
         hdiutil create -volname EasySee -srcfolder main.app -ov -format UDZO easy-see.dmg
 
     - name: Upload build artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: easy-see-mac
         path: dist/*
