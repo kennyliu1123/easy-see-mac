@@ -1,18 +1,12 @@
 from setuptools import setup
 
 APP = ['main.py']
-DATA_FILES = ['app.py', 'state_init.py']
-
+DATA_FILES = [('resources', ['app.py', 'state_init.py'])]  # 指定资源文件目录
 OPTIONS = {
     'argv_emulation': True,
+    'includes': ['streamlit', 'pandas', 'chardet'],
     'packages': ['streamlit', 'pandas', 'chardet'],
-    'includes': ['streamlit'],
-    'plist': {
-        'CFBundleName': 'EasySee',
-        'CFBundleIdentifier': 'com.kennyliu.easysee',
-        'CFBundleVersion': '1.0.0',
-        'CFBundleShortVersionString': '1.0.0',
-    },
+    'resources': ['resources']  # 显式打包资源
 }
 
 setup(
