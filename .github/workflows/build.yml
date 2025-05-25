@@ -3,41 +3,42 @@ name: Build macOS App
 on:
   push:
     tags:
-      - 'v*'  # 推送 tag 时触发
-  workflow_dispatch: {}  # ✅ 支持手动触发构建
+      - 'v*'
+  workflow_dispatch: {}
 
 jobs:
   build-macos:
     runs-on: macos-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v3
 
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.11'
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
 
-      - name: Install dependencies
-        run: |
-          python -m venv venv
-          source venv/bin/activate
-          pip install --upgrade pip wheel setuptools py2app
-          pip install -r requirements.txt
+    - name: Install dependencies
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install --upgrade pip setuptools==65.5.0 wheel py2app==0.28
+        pip install importlib_metadata==6.7.0
+        pip install -r requirements.txt
 
-      - name: Build .app
-        run: |
-          source venv/bin/activate
-          python setup.py py2app
+    - name: Build .app
+      run: |
+        source venv/bin/activate
+        python setup.py py2app
 
-      - name: Compress app and dmg
-        run: |
-          cd dist
-          zip -r easy-see.app.zip main.app
-          hdiutil create -volname EasySee -srcfolder main.app -ov -format UDZO easy-see.dmg
+    - name: Compress app and dmg
+      run: |
+        cd dist
+        zip -r easy-see.app.zip main.app
+        hdiutil create -volname EasySee -srcfolder main.app -ov -format UDZO easy-see.dmg
 
-      - name: Upload build artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: easy-see-mac
-          path: dist/*
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: easy-see-mac
+        path: dist/*
