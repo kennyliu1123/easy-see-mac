@@ -28,7 +28,7 @@ jobs:
       - name: Build .app
         run: |
           source venv/bin/activate
-          python setup.py py2app
+          python setup.py py2app --no-strip
 
       - name: Compress app and dmg
         run: |
