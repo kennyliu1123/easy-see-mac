@@ -3,7 +3,7 @@ name: Build macOS EasySee App
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:  # 支持手动触发
+  workflow_dispatch:
 
 jobs:
   build-macos:
@@ -33,9 +33,16 @@ jobs:
       run: |
         hdiutil create -volname EasySee -srcfolder dist/main.app -ov -format UDZO EasySee.dmg
 
-    - name: Upload DMG to release
+    - name: Upload .app and .dmg to release
       uses: softprops/action-gh-release@v1
       with:
-        files: EasySee.dmg
+        files: |
+          dist/main.app.zip
+          EasySee.dmg
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Zip the .app for uploading
+      run: |
+        cd dist
+        zip -r main.app.zip main.app
