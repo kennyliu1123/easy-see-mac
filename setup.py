@@ -6,7 +6,6 @@ OPTIONS = {
     'argv_emulation': True,
     'includes': ['streamlit'],
     'packages': ['pandas', 'chardet'],
-    'excludes': ['tkinter', 'unittest', 'email', 'html'],
     'resources': DATA_FILES,
     'optimize': 0
 }
