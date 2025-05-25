@@ -5,7 +5,6 @@ DATA_FILES = ['app.py', 'state_init.py']
 OPTIONS = {
     'argv_emulation': True,
     'packages': ['streamlit', 'pandas', 'chardet'],
-    'iconfile': 'icon.icns',
 }
 
 setup(
