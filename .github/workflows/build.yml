@@ -35,7 +35,6 @@ jobs:
            --noconfirm \
            --copy-metadata streamlit \
            --hidden-import streamlit
-           tail -n 20 dist/easy-see/app.log  # Assuming the app log is generated
 
 
     - name: Compress .app and create .dmg
