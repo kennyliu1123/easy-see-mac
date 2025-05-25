@@ -8,6 +8,7 @@ OPTIONS = {
     'packages': ['pandas', 'chardet'],
     'excludes': ['tkinter', 'unittest', 'email', 'html'],
     'resources': DATA_FILES,
+    'recipes': [],  # 👈 关闭 recipe 扫描
     'optimize': 1
 }
 
