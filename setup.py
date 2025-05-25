@@ -2,9 +2,17 @@ from setuptools import setup
 
 APP = ['main.py']
 DATA_FILES = ['app.py', 'state_init.py']
+
 OPTIONS = {
     'argv_emulation': True,
     'packages': ['streamlit', 'pandas', 'chardet'],
+    'includes': ['streamlit'],
+    'plist': {
+        'CFBundleName': 'EasySee',
+        'CFBundleIdentifier': 'com.kennyliu.easysee',
+        'CFBundleVersion': '1.0.0',
+        'CFBundleShortVersionString': '1.0.0',
+    },
 }
 
 setup(
