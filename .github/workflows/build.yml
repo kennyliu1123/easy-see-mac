@@ -1,0 +1,41 @@
+name: Build macOS EasySee App
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # 支持手动触发
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python3 -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+
+    - name: Build .app with py2app
+      run: |
+        source venv/bin/activate
+        python setup.py py2app
+
+    - name: Build .dmg
+      run: |
+        hdiutil create -volname EasySee -srcfolder dist/main.app -ov -format UDZO EasySee.dmg
+
+    - name: Upload DMG to release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: EasySee.dmg
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
